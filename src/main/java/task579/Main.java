@@ -1,8 +1,6 @@
 package task579;
 
 import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -53,7 +51,7 @@ public class Main {
         public void writeToFile(Adder adder) throws FileNotFoundException {
             try (FileWriter writer = new FileWriter(fileName, false)) {
                 writer.write(adder.getSize() + "\n");
-                writer.write(adder.positionsToString());
+                writer.write(adder.getPositionsStr());
             } catch (IOException ex) {
                 System.out.println(ex.getMessage());
             }
@@ -83,39 +81,37 @@ public class Main {
     class Adder {
 
         private int sum;
-        private List<Integer> positions;
+        private int size;
+        private StringBuilder positionsStr;
+
 
         public Adder() {
-            positions = new LinkedList<Integer>();
+            positionsStr = new StringBuilder();
         }
 
         private void add(Element element) {
-            final int positionCorrection = 1;
             this.sum += Math.abs(element.getValue());
-            this.positions.add(element.getPosition() + positionCorrection);
+            this.positionsStr.append(element.getPosition()).append(" ");
+            this.size++;
         }
 
         public int getSize() {
-            return positions.size();
+            return size;
         }
 
-        public String positionsToString() {
-            StringBuilder result = new StringBuilder();
-
-            for (Integer position : positions) {
-                result.append(position).append(" ");
-            }
-            return result.toString();
+        public String getPositionsStr() {
+            return positionsStr.toString();
         }
     }
 
     class Element {
 
+        private final int positionCorrection = 1;
         private int position;
         private int value;
 
         public Element(int position, int value) {
-            this.position = position;
+            this.position = position + positionCorrection;
             this.value = value;
         }
 
