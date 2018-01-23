@@ -23,7 +23,10 @@ public class Main {
         Scanner scanner = new Scanner(new File(IN_FILE));
         Writer writer = new Writer(OUT_FILE);
 
-        if (dnaCalculator.canEvolve(scanner.nextLine().toCharArray(), scanner.nextLine().toCharArray())){
+        String s = scanner.nextLine(); //subsequence
+        String t = scanner.nextLine(); //sequence
+
+        if (dnaCalculator.canEvolve(s.toCharArray(), t.toCharArray())){
             writer.writeToFile("YES");
         }else {
             writer.writeToFile("NO");
@@ -33,34 +36,19 @@ public class Main {
 
     class DnaCalculator {
 
-        private boolean canEvolve(char[] subSequence, char[] sequence) {
-            DnaComparativeTable dnaComparativeTable = new DnaComparativeTable(subSequence, sequence);
-            return dnaComparativeTable.hasSubsequence();
-        }
-    }
+        private boolean canEvolve(char[] sArray, char[] tArray) {
 
-    class DnaComparativeTable {
-        private char[] columnTitle;
-        private char[] lineTitle;
-
-        public DnaComparativeTable(char[] columnTitle, char[] lineTitle) {
-            this.columnTitle = columnTitle;
-            this.lineTitle = lineTitle;
-        }
-
-        public boolean hasSubsequence() {
-
-            int currentLength = 0;
-            int currentIndex = 0;
-            while (currentLength < columnTitle.length && currentIndex < lineTitle.length) {
-                if (columnTitle[currentLength] == (lineTitle[currentIndex])) {
-                    currentLength++;
-                    currentIndex++;
+            int sIndex = 0;
+            int tIndex = 0;
+            while (sIndex < sArray.length && tIndex < tArray.length) {
+                if (sArray[sIndex] == (tArray[tIndex])) {
+                    sIndex++;
+                    tIndex++;
                 } else {
-                    currentIndex++;
+                    tIndex++;
                 }
             }
-            if (currentLength == columnTitle.length) {
+            if (sIndex == sArray.length) {
                 return true;
             } else {
                 return false;
