@@ -23,7 +23,7 @@ public class Main {
         Scanner scanner = new Scanner(new File(IN_FILE));
         Writer writer = new Writer(OUT_FILE);
 
-        if (dnaCalculator.canEvolve(scanner.nextLine(), scanner.nextLine())){
+        if (dnaCalculator.canEvolve(scanner.nextLine().toCharArray(), scanner.nextLine().toCharArray())){
             writer.writeToFile("YES");
         }else {
             writer.writeToFile("NO");
@@ -33,17 +33,17 @@ public class Main {
 
     class DnaCalculator {
 
-        private boolean canEvolve(String subSequence, String sequence) {
-            DnaComparativeTable dnaComparativeTable = new DnaComparativeTable(subSequence.split("|"), sequence.split("|"));
+        private boolean canEvolve(char[] subSequence, char[] sequence) {
+            DnaComparativeTable dnaComparativeTable = new DnaComparativeTable(subSequence, sequence);
             return dnaComparativeTable.hasSubsequence();
         }
     }
 
     class DnaComparativeTable {
-        private String[] columnTitle;
-        private String[] lineTitle;
+        private char[] columnTitle;
+        private char[] lineTitle;
 
-        public DnaComparativeTable(String[] columnTitle, String[] lineTitle) {
+        public DnaComparativeTable(char[] columnTitle, char[] lineTitle) {
             this.columnTitle = columnTitle;
             this.lineTitle = lineTitle;
         }
@@ -53,7 +53,7 @@ public class Main {
             int currentLength = 0;
             int currentIndex = 0;
             while (currentLength < columnTitle.length && currentIndex < lineTitle.length) {
-                if (columnTitle[currentLength].equalsIgnoreCase(lineTitle[currentIndex])) {
+                if (columnTitle[currentLength] == (lineTitle[currentIndex])) {
                     currentLength++;
                     currentIndex++;
                 } else {
