@@ -1,58 +1,41 @@
 package task278;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
-/**
- * Created by User on 23.01.2018.
- */
 public class Main {
 
     private final String IN_FILE = "input.txt";
     private final String OUT_FILE = "output.txt";
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
         new Main().run();
     }
 
-    private void run() throws FileNotFoundException {
-        DnaCalculator dnaCalculator = new DnaCalculator();
+    private void run() throws IOException {
         Scanner scanner = new Scanner(new File(IN_FILE));
-        Writer writer = new Writer(OUT_FILE);
+        Writer fileWriter = new Writer(OUT_FILE);
 
-        String s = scanner.nextLine(); //subsequence
-        String t = scanner.nextLine(); //sequence
+        char[] s = scanner.nextLine().toCharArray();
+        char[] t = scanner.nextLine().toCharArray();
 
-        if (dnaCalculator.canEvolve(s.toCharArray(), t.toCharArray())){
-            writer.writeToFile("YES");
-        }else {
-            writer.writeToFile("NO");
-        }
-    }
+        int sIndex = 0;
+        int tIndex = 0;
 
-
-    class DnaCalculator {
-
-        private boolean canEvolve(char[] sArray, char[] tArray) {
-
-            int sIndex = 0;
-            int tIndex = 0;
-            while (sIndex < sArray.length && tIndex < tArray.length) {
-                if (sArray[sIndex] == (tArray[tIndex])) {
-                    sIndex++;
-                    tIndex++;
-                } else {
-                    tIndex++;
-                }
-            }
-            if (sIndex == sArray.length) {
-                return true;
+        while (sIndex < s.length && tIndex < t.length) {
+            if (s[sIndex] == (t[tIndex])) {
+                sIndex++;
+                tIndex++;
             } else {
-                return false;
+                tIndex++;
             }
+        }
+        if (sIndex == s.length) {
+            fileWriter.writeToFile("YES");
+        } else {
+            fileWriter.writeToFile("NO");
         }
     }
 
@@ -64,7 +47,7 @@ public class Main {
             this.fileName = fileName;
         }
 
-        public void writeToFile(String str) throws FileNotFoundException {
+        public void writeToFile(String str) {
             try (FileWriter writer = new FileWriter(fileName, false)) {
                 writer.write(str);
             } catch (IOException ex) {
