@@ -1,6 +1,9 @@
 package task579;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -40,50 +43,11 @@ public class Main {
         }
     }
 
-    class Writer {
-
-        private String fileName;
-
-        public Writer(String fileName) {
-            this.fileName = fileName;
-        }
-
-        public void writeToFile(Adder adder) throws FileNotFoundException {
-            try (FileWriter writer = new FileWriter(fileName, false)) {
-                writer.write(adder.getSize() + "\n");
-                writer.write(adder.getPositionsStr());
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-    }
-
-    class Reader {
-
-        private String fileName;
-
-        public Reader(String fileName) {
-            this.fileName = fileName;
-        }
-
-        public int[] readIntArrayFromFile() throws FileNotFoundException {
-            Scanner scanner = new Scanner(new File(fileName));
-            final int arrayLength = scanner.nextInt();
-            int[] result = new int[arrayLength];
-            int i = 0;
-            while (scanner.hasNext()) {
-                result[i++] = scanner.nextInt();
-            }
-            return result;
-        }
-    }
-
     class Adder {
 
         private int sum;
         private int size;
         private StringBuilder positionsStr;
-
 
         public Adder() {
             positionsStr = new StringBuilder();
@@ -121,6 +85,47 @@ public class Main {
 
         public int getValue() {
             return value;
+        }
+    }
+
+    class Writer {
+
+        private String fileName;
+
+        public Writer(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public void writeToFile(Adder adder) {
+            try (FileWriter writer = new FileWriter(fileName, false)) {
+                writer.write(adder.getSize() + "\n");
+                writer.write(adder.getPositionsStr());
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+
+    class Reader {
+
+        private String fileName;
+
+        public Reader(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public int[] readIntArrayFromFile() {
+            try (Scanner scanner = new Scanner(new File(fileName))) {
+                final int arrayLength = scanner.nextInt();
+                int[] result = new int[arrayLength];
+                int i = 0;
+                while (scanner.hasNext()) {
+                    result[i++] = scanner.nextInt();
+                }
+                return result;
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         }
     }
 }
