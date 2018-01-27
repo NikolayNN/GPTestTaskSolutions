@@ -43,30 +43,27 @@ public class Main {
 
         for (int i = 1; i < expectedMatrixCount; i++) {
             int[][] currentMatrix = fileReader.readNextMatrix(expectedMatrixSize);
-            resultMatrixRow = Matrixes.multipleMatrixWithConstrain(resultMatrixRow, currentMatrix, expectedMatrixSize, p);
+            resultMatrixRow = multipleMatrixWithConstrain(resultMatrixRow, currentMatrix, expectedMatrixSize, p);
         }
 
         fileWriter.writeToFile(resultMatrixRow[requiredColumn - 1]);
     }
 
-    static class Matrixes {
+    public int[] multipleMatrixWithConstrain(int[] matrixARow, int[][] matrixB, int matrixSize, int p) {
 
-        public static int[] multipleMatrixWithConstrain(int[] matrixARow, int[][] matrixB, int matrixSize, int p) {
+        int[] resultMatrix = new int[matrixSize];
 
-            int[] resultMatrix = new int[matrixSize];
-
-                for (int i = 0; i < matrixSize; i++) {
-                    int sum = 0;
-                    for (int j = 0; j < matrixSize; j++) {
-                       sum += matrixARow[j] * matrixB[j][i];
-                    }
-                    if (sum >= p) {
-                        sum = sum % p;
-                    }
-                    resultMatrix[i] = sum;
-                }
-            return resultMatrix;
+        for (int i = 0; i < matrixSize; i++) {
+            int sum = 0;
+            for (int j = 0; j < matrixSize; j++) {
+                sum += matrixARow[j] * matrixB[j][i];
+            }
+            if (sum >= p) {
+                sum = sum % p;
+            }
+            resultMatrix[i] = sum;
         }
+        return resultMatrix;
     }
 
     class Writer {
