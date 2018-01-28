@@ -11,7 +11,6 @@ public class Main {
     private final String IN_FILE = "input.txt";
     private final String OUT_FILE = "output.txt";
 
-
     public static void main(String[] args) throws IOException {
         new Main().run();
     }
@@ -20,16 +19,8 @@ public class Main {
 
         Reader fileReader = new Reader(IN_FILE);
         Writer fileWriter = new Writer(OUT_FILE);
-        long start = System.currentTimeMillis();
 
         solve(fileReader, fileWriter);
-
-        long usedBytes = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
-        System.out.println(usedBytes);
-
-        long finish = System.currentTimeMillis();
-        System.out.println(finish - start);
-
     }
 
     private void solve(Reader fileReader, Writer fileWriter) throws IOException {
@@ -37,9 +28,11 @@ public class Main {
         int[] params = fileReader.readInts(2);
         final int expectedMatrixCount = params[0];
         final int expectedMatrixSize = params[1];
+
         params = fileReader.readInts(2);
         final int requiredRow = params[0];
         final int requiredColumn = params[1];
+
         params = fileReader.readInts(1);
         final int p = params[0];
 
@@ -47,25 +40,26 @@ public class Main {
 
         for (int m = 1; m < expectedMatrixCount; m++) {
             fileReader.skipLine();
+
             int[] tempSumMatrix = new int[expectedMatrixSize];
 
+            int[] currentMultipliedRow;
             for (int i = 0; i < expectedMatrixSize - 1; i++) {
-                int[] matrixBRow = fileReader.readNextMatrixRow(expectedMatrixSize);
+                currentMultipliedRow = fileReader.readNextMatrixRow(expectedMatrixSize);
                 for (int j = 0; j < expectedMatrixSize; j++) {
-                    tempSumMatrix[j] += resultMatrixRow[i] * matrixBRow[j];
+                    tempSumMatrix[j] += resultMatrixRow[i] * currentMultipliedRow[j];
                 }
             }
 
-            int[] matrixBRow = fileReader.readNextMatrixRow(expectedMatrixSize);
+            currentMultipliedRow = fileReader.readNextMatrixRow(expectedMatrixSize);
             for (int j = 0; j < expectedMatrixSize; j++) {
-                tempSumMatrix[j] += resultMatrixRow[expectedMatrixSize - 1] * matrixBRow[j];
+                tempSumMatrix[j] += resultMatrixRow[expectedMatrixSize - 1] * currentMultipliedRow[j];
                 if (tempSumMatrix[j] >= p) {
                     tempSumMatrix[j] = tempSumMatrix[j] % p;
                 }
             }
             resultMatrixRow = tempSumMatrix;
         }
-
         fileWriter.writeToFile(resultMatrixRow[requiredColumn - 1]);
     }
 
@@ -118,30 +112,33 @@ public class Main {
             int i = 1;
             while (i != requiredRow) {
                 i++;
-                reader.readLine();
+                skipLine();
             }
 
             int[] result = readNextMatrixRow(matrixSize);
 
             while (i != matrixSize) {
                 i++;
-                reader.readLine();
+                skipLine();
             }
             return result;
         }
 
         public int[] readNextMatrixRow(int matrixSize) throws IOException {
 
-            String[] strArray = reader.readLine().split(" ");
+            char[] chars = reader.readLine().toCharArray();
 
             int[] result = new int[matrixSize];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = Integer.parseInt(strArray[i]);
+            int k = 0;
+            for (int i = 0; i < chars.length; i++) {
+                char[] temp = new char[4];
+                int j = 0;
+                while (i < chars.length && chars[i] != ' ') {
+                    temp[j++] = chars[i++];
+                }
+                result[k++] = Integer.parseInt(String.valueOf(temp).trim());
             }
             return result;
-
-//            return Arrays.stream(reader.readLine().split(" "))
-//                    .mapToInt(Integer::parseInt).toArray();
         }
     }
 }
