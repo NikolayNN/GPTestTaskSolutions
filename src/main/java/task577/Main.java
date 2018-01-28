@@ -1,11 +1,11 @@
 package task577;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.Scanner;
 
 public class Main {
 
@@ -13,11 +13,11 @@ public class Main {
     private final String OUT_FILE = "output.txt";
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new Main().run();
     }
 
-    private void run() {
+    private void run() throws IOException {
 
         Reader fileReader = new Reader(IN_FILE);
         Writer fileWriter = new Writer(OUT_FILE);
@@ -25,45 +25,49 @@ public class Main {
 
         solve(fileReader, fileWriter);
 
+        long usedBytes = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        System.out.println(usedBytes);
+
         long finish = System.currentTimeMillis();
         System.out.println(finish - start);
 
     }
 
-    private void solve(Reader fileReader, Writer fileWriter) {
+    private void solve(Reader fileReader, Writer fileWriter) throws IOException {
 
-        final int expectedMatrixCount = fileReader.readInt();
-        final int expectedMatrixSize = fileReader.readInt();
-        final int requiredRow = fileReader.readInt();
-        final int requiredColumn = fileReader.readInt();
-        final int p = fileReader.readInt();
-        fileReader.nextLine();
+        int[] params = fileReader.readInts();
+        final int expectedMatrixCount = params[0];
+        final int expectedMatrixSize = params[1];
+        params = fileReader.readInts();
+        final int requiredRow = params[0];
+        final int requiredColumn = params[1];
+        params = fileReader.readInts();
+        final int p = params[0];
 
-        int[] resultMatrixRow = fileReader.readNextMatrix(expectedMatrixSize)[requiredRow-1];
+        int[] resultMatrixRow = fileReader.readRequiredRow(requiredRow, expectedMatrixSize);
 
-        for (int i = 1; i < expectedMatrixCount; i++) {
-            int[][] currentMatrix = fileReader.readNextMatrix(expectedMatrixSize);
-            resultMatrixRow = multipleMatrixWithConstrain(resultMatrixRow, currentMatrix, expectedMatrixSize, p);
+        for (int m = 1; m < expectedMatrixCount; m++) {
+            fileReader.skipLine();
+            int[] tempSumMatrix = new int[expectedMatrixSize];
+
+            for (int i = 0; i < expectedMatrixSize - 1; i++) {
+                int[] matrixBRow = fileReader.readNextMatrixRow();
+                for (int j = 0; j < expectedMatrixSize; j++) {
+                    tempSumMatrix[j] += resultMatrixRow[i] * matrixBRow[j];
+                }
+            }
+
+            int[] matrixBRow = fileReader.readNextMatrixRow();
+            for (int j = 0; j < expectedMatrixSize; j++) {
+                tempSumMatrix[j] += resultMatrixRow[expectedMatrixSize - 1] * matrixBRow[j];
+                if (tempSumMatrix[j] >= p) {
+                    tempSumMatrix[j] = tempSumMatrix[j] % p;
+                }
+            }
+            resultMatrixRow = tempSumMatrix;
         }
 
         fileWriter.writeToFile(resultMatrixRow[requiredColumn - 1]);
-    }
-
-    public int[] multipleMatrixWithConstrain(int[] matrixARow, int[][] matrixB, int matrixSize, int p) {
-
-        int[] resultMatrix = new int[matrixSize];
-
-        for (int i = 0; i < matrixSize; i++) {
-            int sum = 0;
-            for (int j = 0; j < matrixSize; j++) {
-                sum += matrixARow[j] * matrixB[j][i];
-            }
-            if (sum >= p) {
-                sum = sum % p;
-            }
-            resultMatrix[i] = sum;
-        }
-        return resultMatrix;
     }
 
     class Writer {
@@ -90,38 +94,47 @@ public class Main {
 
     class Reader {
 
-        Scanner scanner;
-        String fileName;
+        BufferedReader reader;
 
         public Reader(String fileName) {
-            this.fileName = fileName;
             try {
-                scanner = new Scanner(new File(fileName));
+                this.reader = new BufferedReader(new FileReader(fileName));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        public int readInt() {
-            return scanner.nextInt();
+        public int[] readInts() throws IOException {
+            return readNextMatrixRow();
         }
 
-        public String nextLine() {
-            return scanner.nextLine();
+        public void skipLine() throws IOException {
+            reader.readLine();
         }
 
-        public int[][] readNextMatrix(int matrixSize) {
+        public int[] readRequiredRow(int requiredRow, int matrixSize) throws IOException {
 
-            scanner.nextLine();
+            skipLine();
 
-            int[][] result = new int[matrixSize][matrixSize];
+            int i = 1;
+            while (i != requiredRow) {
+                i++;
+                reader.readLine();
+            }
 
-            int i = 0;
+            int[] result = readNextMatrixRow();
+
             while (i != matrixSize) {
-                result[i++] = Arrays.stream(scanner.nextLine().split(" "))
-                        .map(String::trim).mapToInt(Integer::parseInt).toArray();
+                i++;
+                reader.readLine();
             }
             return result;
+        }
+
+        public int[] readNextMatrixRow() throws IOException {
+
+            return Arrays.stream(reader.readLine().split(" "))
+                    .map(String::trim).mapToInt(Integer::parseInt).toArray();
         }
     }
 }
