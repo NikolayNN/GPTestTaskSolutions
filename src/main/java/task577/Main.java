@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 
 public class Main {
 
@@ -35,13 +34,13 @@ public class Main {
 
     private void solve(Reader fileReader, Writer fileWriter) throws IOException {
 
-        int[] params = fileReader.readInts();
+        int[] params = fileReader.readInts(2);
         final int expectedMatrixCount = params[0];
         final int expectedMatrixSize = params[1];
-        params = fileReader.readInts();
+        params = fileReader.readInts(2);
         final int requiredRow = params[0];
         final int requiredColumn = params[1];
-        params = fileReader.readInts();
+        params = fileReader.readInts(1);
         final int p = params[0];
 
         int[] resultMatrixRow = fileReader.readRequiredRow(requiredRow, expectedMatrixSize);
@@ -51,13 +50,13 @@ public class Main {
             int[] tempSumMatrix = new int[expectedMatrixSize];
 
             for (int i = 0; i < expectedMatrixSize - 1; i++) {
-                int[] matrixBRow = fileReader.readNextMatrixRow();
+                int[] matrixBRow = fileReader.readNextMatrixRow(expectedMatrixSize);
                 for (int j = 0; j < expectedMatrixSize; j++) {
                     tempSumMatrix[j] += resultMatrixRow[i] * matrixBRow[j];
                 }
             }
 
-            int[] matrixBRow = fileReader.readNextMatrixRow();
+            int[] matrixBRow = fileReader.readNextMatrixRow(expectedMatrixSize);
             for (int j = 0; j < expectedMatrixSize; j++) {
                 tempSumMatrix[j] += resultMatrixRow[expectedMatrixSize - 1] * matrixBRow[j];
                 if (tempSumMatrix[j] >= p) {
@@ -104,8 +103,8 @@ public class Main {
             }
         }
 
-        public int[] readInts() throws IOException {
-            return readNextMatrixRow();
+        public int[] readInts(int count) throws IOException {
+            return readNextMatrixRow(count);
         }
 
         public void skipLine() throws IOException {
@@ -122,7 +121,7 @@ public class Main {
                 reader.readLine();
             }
 
-            int[] result = readNextMatrixRow();
+            int[] result = readNextMatrixRow(matrixSize);
 
             while (i != matrixSize) {
                 i++;
@@ -131,10 +130,18 @@ public class Main {
             return result;
         }
 
-        public int[] readNextMatrixRow() throws IOException {
+        public int[] readNextMatrixRow(int matrixSize) throws IOException {
 
-            return Arrays.stream(reader.readLine().split(" "))
-                    .map(String::trim).mapToInt(Integer::parseInt).toArray();
+            String[] strArray = reader.readLine().split(" ");
+
+            int[] result = new int[matrixSize];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = Integer.parseInt(strArray[i]);
+            }
+            return result;
+
+//            return Arrays.stream(reader.readLine().split(" "))
+//                    .mapToInt(Integer::parseInt).toArray();
         }
     }
 }
