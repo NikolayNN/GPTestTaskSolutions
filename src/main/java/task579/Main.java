@@ -100,8 +100,8 @@ public class Main {
             try (FileWriter writer = new FileWriter(fileName, false)) {
                 writer.write(adder.getSize() + "\n");
                 writer.write(adder.getPositionsStr());
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
+            } catch (IOException e) {
+                throw new RuntimeException(e.getMessage(), e);
             }
         }
     }
