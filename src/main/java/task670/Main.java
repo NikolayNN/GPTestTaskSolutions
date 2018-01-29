@@ -26,7 +26,7 @@ public class Main {
         int currentNumber = 0;
         int currentPosition = 0;
 
-        while (true) {
+        while (currentPosition <= requiredPosition) {
 
             if (hasRepeatedDigits(currentNumber)) {
                 currentNumber++;
@@ -45,23 +45,19 @@ public class Main {
 
     private boolean hasRepeatedDigits(Integer number) {
 
-        if (number <= 10) {
-            return false;
-        }
-
         Set<Integer> numberSet = new HashSet<>();
 
-        int expectedSize = 0;
+        int actualSize = 0;
         while (number != 0) {
 
             int tail = number % 10;
             numberSet.add(tail);
-            expectedSize++;
+            actualSize++;
 
             number = number / 10;
         }
 
-        if (numberSet.size() == expectedSize) {
+        if (numberSet.size() == actualSize) {
             return false;
         } else {
             return true;
