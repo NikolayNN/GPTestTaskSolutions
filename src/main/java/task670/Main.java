@@ -1,7 +1,6 @@
 package task670;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
@@ -13,88 +12,43 @@ public class Main {
     private final String IN_FILE = "input.txt";
     private final String OUT_FILE = "output.txt";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         new Main().run();
     }
 
-    private void run() {
+    private void run() throws IOException {
 
-        Reader fileReader = new Reader(IN_FILE);
-        Writer fileWriter = new Writer(OUT_FILE);
+        Scanner scanner = new Scanner(new File(IN_FILE));
 
-        int requiredPosition = fileReader.readIntFromFile();
+        final int requiredPosition = scanner.nextInt();
+        scanner.close();
         int currentNumber = 0;
         int currentPosition = 0;
 
-        while (currentPosition <= requiredPosition) {
-
-            if (hasRepeatedDigits(currentNumber)) {
-                currentNumber++;
-                continue;
-            }
-            if (requiredPosition == currentPosition) {
-                break;
-            } else {
-                currentNumber++;
+        while (currentPosition < requiredPosition) {
+            if (!hasRepeatedDigits(++currentNumber)) {
                 currentPosition++;
             }
         }
 
-        fileWriter.writeToFile(Integer.toString(currentNumber));
+        FileWriter writer = new FileWriter(OUT_FILE, false);
+        writer.write(Integer.toString(currentNumber));
+        writer.close();
     }
 
     private boolean hasRepeatedDigits(Integer number) {
 
-        Set<Integer> numberSet = new HashSet<>();
+        Set<Integer> digitsSetWithoutDuplicates = new HashSet<>(5);
 
-        int actualSize = 0;
+        int actualDigitCount = 0;
         while (number != 0) {
 
-            int tail = number % 10;
-            numberSet.add(tail);
-            actualSize++;
+            int digit = number % 10;
+            digitsSetWithoutDuplicates.add(digit);
+            actualDigitCount++;
 
             number = number / 10;
         }
-
-        if (numberSet.size() == actualSize) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    class Writer {
-
-        private String fileName;
-
-        public Writer(String fileName) {
-            this.fileName = fileName;
-        }
-
-        public void writeToFile(String str) {
-            try (FileWriter writer = new FileWriter(fileName, false)) {
-                writer.write(str);
-            } catch (IOException ex) {
-                System.out.println(ex.getMessage());
-            }
-        }
-    }
-
-    class Reader {
-
-        private String fileName;
-
-        public Reader(String fileName) {
-            this.fileName = fileName;
-        }
-
-        public int readIntFromFile() {
-            try (Scanner scanner = new Scanner(new File(fileName))) {
-                return scanner.nextInt();
-            } catch (FileNotFoundException ex) {
-                throw new RuntimeException(ex.getMessage(), ex);
-            }
-        }
+        return digitsSetWithoutDuplicates.size() != actualDigitCount;
     }
 }
